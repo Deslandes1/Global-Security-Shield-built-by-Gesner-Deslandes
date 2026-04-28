@@ -20,11 +20,10 @@ if "authenticated" not in st.session_state:
 
 # ---------- DATA STORAGE (in‑memory; for production use a database) ----------
 if "apps" not in st.session_state:
-    st.session_state.apps = {}          # {app_name: {"url": url, "api_key": key, "created_at": ...}}
+    st.session_state.apps = {}
 if "logs" not in st.session_state:
-    st.session_state.logs = []          # list of attack log dicts
+    st.session_state.logs = []
 if "custom_rules" not in st.session_state:
-    # custom_rules: {attack_type: [pattern1, pattern2, ...]}
     st.session_state.custom_rules = {}
 
 # ---------- DEFAULT ATTACK PATTERNS ----------
@@ -68,15 +67,12 @@ def generate_api_key() -> str:
     return secrets.token_urlsafe(32)
 
 def is_malicious(text: str, custom_rules: dict) -> Tuple[bool, Optional[str]]:
-    """Check text against default + custom patterns."""
     if not isinstance(text, str):
         return False, None
-    # Default patterns
     for attack_type, patterns in DEFAULT_PATTERNS.items():
         for pat in patterns:
             if re.search(pat, text, re.IGNORECASE):
                 return True, attack_type
-    # Custom patterns
     for attack_type, patterns in custom_rules.items():
         for pat in patterns:
             if re.search(pat, text, re.IGNORECASE):
@@ -84,7 +80,6 @@ def is_malicious(text: str, custom_rules: dict) -> Tuple[bool, Optional[str]]:
     return False, None
 
 def simulate_attack_detection():
-    """Demo function that shows live input testing."""
     st.markdown("### 🧪 Live Attack Simulation")
     st.markdown("Type a malicious string below to see how the shield blocks it.")
     test_input = st.text_input("Test input (e.g., `<script>alert(1)</script>` or `' OR 1=1 --`)")
@@ -92,7 +87,6 @@ def simulate_attack_detection():
         malicious, attack_type = is_malicious(test_input, st.session_state.custom_rules)
         if malicious:
             st.error(f"🚨 BLOCKED! Potential **{attack_type}** attack detected.")
-            # Log the simulated attack
             st.session_state.logs.append({
                 "app_name": "DEMO (Live Test)",
                 "timestamp": datetime.datetime.utcnow().isoformat(),
@@ -101,7 +95,6 @@ def simulate_attack_detection():
         else:
             st.success("✅ Input appears safe (no known patterns).")
 
-# ---------- PROCESS INCOMING LOGS (via query parameters) ----------
 def process_incoming_log():
     params = st.query_params
     if "log" in params:
@@ -165,6 +158,7 @@ except SecurityException:
     st.stop()
         """, language="python")
 
+# ---------- MAIN DASHBOARD ----------
 def main_dashboard():
     st.title("🛡️ Global Security Shield Dashboard – built by Gesner Deslandes")
     st.markdown("Protect all your Python web applications from SQL injection, XSS, and other attacks.")
@@ -226,7 +220,6 @@ def main_dashboard():
         st.subheader("⚠️ Security Alerts (real‑time)")
         if st.session_state.logs:
             df = pd.DataFrame(st.session_state.logs)
-            # Show most recent first
             df = df.sort_values("timestamp", ascending=False)
             st.dataframe(df, use_container_width=True)
             csv = df.to_csv(index=False)
