@@ -124,21 +124,20 @@ def login_page():
                 else:
                     st.error("Incorrect password.")
     st.markdown("---")
-    st.markdown("""### What is the Global Security Shield?
-- ✅ Real‑time attack blocking – SQL injection, XSS, path traversal, command injection.
-- ✅ Central dashboard – Register your apps, view attack logs, add custom rules.
-- ✅ Easy integration – Add just two lines of code to protect any Streamlit or Python web app.
-- ✅ Autonomous protection – Once deployed, the shield protects your apps without manual intervention.
-
-**How it works:**  
-The shield runs inside your application. It checks every user input (URL parameters, forms, file uploads) against a set of attack patterns. If a match is found, the request is rejected and a log is sent to this dashboard.
-
-**Get started:**  
-1. Deploy this dashboard (you're looking at it).  
-2. Register your apps below to obtain API keys.  
-3. Copy the `shield.py` module into your app's repository.  
-4. Initialise the shield with your API key and wrap user inputs with `sanitize_input()`.
-""")
+    st.markdown(
+        "### What is the Global Security Shield?\n\n"
+        "- ✅ Real‑time attack blocking – SQL injection, XSS, path traversal, command injection.\n"
+        "- ✅ Central dashboard – Register your apps, view attack logs, add custom rules.\n"
+        "- ✅ Easy integration – Add just two lines of code to protect any Streamlit or Python web app.\n"
+        "- ✅ Autonomous protection – Once deployed, the shield protects your apps without manual intervention.\n\n"
+        "**How it works:**  \n"
+        "The shield runs inside your application. It checks every user input (URL parameters, forms, file uploads) against a set of attack patterns. If a match is found, the request is rejected and a log is sent to this dashboard.\n\n"
+        "**Get started:**  \n"
+        "1. Deploy this dashboard (you're looking at it).  \n"
+        "2. Register your apps below to obtain API keys.  \n"
+        "3. Copy the `shield.py` module into your app's repository.  \n"
+        "4. Initialise the shield with your API key and wrap user inputs with `sanitize_input()`."
+    )
     with st.expander("📘 Example integration code"):
         st.code("""
 from shield import WebAppShield, SecurityException
@@ -256,12 +255,33 @@ def main_dashboard():
         simulate_attack_detection()
         st.markdown("---")
         st.markdown("### 📊 How the shield integrates into your app")
-        st.markdown("""
-**Step 1 – Add `shield.py` to your project**  
-The middleware is a single file. Place it in the same folder as your `app.py`.
+        st.markdown(
+            "**Step 1 – Add `shield.py` to your project**  \n"
+            "The middleware is a single file. Place it in the same folder as your `app.py`.\n\n"
+            "**Step 2 – Initialise the shield**  \n"
+            "```python\n"
+            "from shield import WebAppShield, SecurityException\n"
+            "shield = WebAppShield(\"Your App Name\", api_key=\"your-api-key\")\n"
+            "shield.protect_streamlit()\n"
+            "```\n\n"
+            "**Step 3 – Wrap user inputs**  \n"
+            "```python\n"
+            "user_text = st.text_input(\"Search:\")\n"
+            "try:\n"
+            "    safe_text = shield.sanitize_input(user_text)\n"
+            "    # use safe_text\n"
+            "except SecurityException:\n"
+            "    st.error(\"Malicious input blocked.\")\n"
+            "    st.stop()\n"
+            "```\n\n"
+            "**Step 4 – Deploy**  \n"
+            "The shield will automatically log any attack to this dashboard via a simple HTTP request."
+        )
 
-**Step 2 – Initialise the shield**  
-```python
-from shield import WebAppShield, SecurityException
-shield = WebAppShield("Your App Name", api_key="your-api-key")
-shield.protect_streamlit()
+# ---------- ROUTING ----------
+process_incoming_log()
+
+if not st.session_state.authenticated:
+    login_page()
+else:
+    main_dashboard()
