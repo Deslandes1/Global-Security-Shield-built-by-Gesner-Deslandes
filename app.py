@@ -18,7 +18,7 @@ st.set_page_config(
 if "authenticated" not in st.session_state:
     st.session_state.authenticated = False
 
-# ---------- DATA STORAGE (in‑memory; for production use a database) ----------
+# ---------- DATA STORAGE ----------
 if "apps" not in st.session_state:
     st.session_state.apps = {}
 if "logs" not in st.session_state:
@@ -66,7 +66,7 @@ DEFAULT_PATTERNS = {
 def generate_api_key() -> str:
     return secrets.token_urlsafe(32)
 
-def is_malicious(text: str, custom_rules: dict) -> Tuple[bool, Optional[str]]:
+def is_malicious(text: str, custom_rules: dict) -> tuple:
     if not isinstance(text, str):
         return False, None
     for attack_type, patterns in DEFAULT_PATTERNS.items():
@@ -124,22 +124,21 @@ def login_page():
                 else:
                     st.error("Incorrect password.")
     st.markdown("---")
-    st.markdown("""
-    ### What is the Global Security Shield?
-    - ✅ **Real‑time attack blocking** – SQL injection, XSS, path traversal, command injection.
-    - ✅ **Central dashboard** – Register your apps, view attack logs, add custom rules.
-    - ✅ **Easy integration** – Add just two lines of code to protect any Streamlit or Python web app.
-    - ✅ **Autonomous protection** – Once deployed, the shield protects your apps without manual intervention.
-    
-    **How it works:**  
-    The shield runs inside your application. It checks every user input (URL parameters, forms, file uploads) against a set of attack patterns. If a match is found, the request is rejected and a log is sent to this dashboard.
-    
-    **Get started:**  
-    1. Deploy this dashboard (you're looking at it).  
-    2. Register your apps below to obtain API keys.  
-    3. Copy the `shield.py` module into your app's repository.  
-    4. Initialise the shield with your API key and wrap user inputs with `sanitize_input()`.
-    """)
+    st.markdown("""### What is the Global Security Shield?
+- ✅ Real‑time attack blocking – SQL injection, XSS, path traversal, command injection.
+- ✅ Central dashboard – Register your apps, view attack logs, add custom rules.
+- ✅ Easy integration – Add just two lines of code to protect any Streamlit or Python web app.
+- ✅ Autonomous protection – Once deployed, the shield protects your apps without manual intervention.
+
+**How it works:**  
+The shield runs inside your application. It checks every user input (URL parameters, forms, file uploads) against a set of attack patterns. If a match is found, the request is rejected and a log is sent to this dashboard.
+
+**Get started:**  
+1. Deploy this dashboard (you're looking at it).  
+2. Register your apps below to obtain API keys.  
+3. Copy the `shield.py` module into your app's repository.  
+4. Initialise the shield with your API key and wrap user inputs with `sanitize_input()`.
+""")
     with st.expander("📘 Example integration code"):
         st.code("""
 from shield import WebAppShield, SecurityException
@@ -163,7 +162,6 @@ def main_dashboard():
     st.title("🛡️ Global Security Shield Dashboard – built by Gesner Deslandes")
     st.markdown("Protect all your Python web applications from SQL injection, XSS, and other attacks.")
 
-    # Sidebar info
     st.sidebar.markdown("## 🔧 Shield Status")
     st.sidebar.success("🟢 Active – monitoring your apps")
     st.sidebar.markdown("---")
@@ -181,10 +179,8 @@ def main_dashboard():
         st.session_state.authenticated = False
         st.rerun()
 
-    # Tabs
     tab1, tab2, tab3, tab4 = st.tabs(["📋 Registered Apps", "⚠️ Threat Logs", "⚙️ Custom Rules", "🧪 Live Demo"])
 
-    # ---------- TAB 1: Register Apps ----------
     with tab1:
         st.subheader("➕ Register a new application")
         with st.form("register_form"):
@@ -201,7 +197,6 @@ def main_dashboard():
                 st.success(f"✅ App '{app_name}' registered!")
                 st.code(f"API Key: {api_key}", language="text")
                 st.info("Copy this key and use it in your app's shield initialisation.")
-
         st.subheader("📱 Registered Applications")
         if st.session_state.apps:
             for name, info in st.session_state.apps.items():
@@ -215,7 +210,6 @@ def main_dashboard():
         else:
             st.info("No applications registered yet. Use the form above.")
 
-    # ---------- TAB 2: Threat Logs ----------
     with tab2:
         st.subheader("⚠️ Security Alerts (real‑time)")
         if st.session_state.logs:
@@ -226,14 +220,12 @@ def main_dashboard():
             st.download_button("📥 Download Logs (CSV)", csv, "security_logs.csv", "text/csv")
         else:
             st.info("No threats detected yet. When your protected apps block an attack, it will appear here.")
-
         st.markdown("---")
         st.markdown("### 🔌 Log Ingestion Endpoint")
         st.markdown("Protected apps send logs to this dashboard via a GET request. The URL is:")
         base_url = st.get_option("browser.serverAddress") or "your-dashboard.streamlit.app"
         st.code(f"https://{base_url}?log={{...}}", language="text")
 
-    # ---------- TAB 3: Custom Rules ----------
     with tab3:
         st.subheader("➕ Add Custom Detection Rule")
         attack_type = st.selectbox("Attack type", list(DEFAULT_PATTERNS.keys()) + ["custom"])
@@ -249,7 +241,6 @@ def main_dashboard():
                 st.info("Custom rules will be applied to all subsequent checks.")
             else:
                 st.error("Please fill both fields.")
-
         st.subheader("📋 Current Custom Rules")
         if st.session_state.custom_rules:
             for atype, patterns in st.session_state.custom_rules.items():
@@ -259,7 +250,6 @@ def main_dashboard():
         else:
             st.info("No custom rules added yet.")
 
-    # ---------- TAB 4: Live Demo ----------
     with tab4:
         st.markdown("## 🧪 Test the Shield Live")
         st.markdown("This section simulates how the shield would block malicious inputs in your own apps.")
@@ -267,11 +257,11 @@ def main_dashboard():
         st.markdown("---")
         st.markdown("### 📊 How the shield integrates into your app")
         st.markdown("""
-        **Step 1 – Add `shield.py` to your project**  
-        The middleware is a single file. Place it in the same folder as your `app.py`.
+**Step 1 – Add `shield.py` to your project**  
+The middleware is a single file. Place it in the same folder as your `app.py`.
 
-        **Step 2 – Initialise the shield**  
-        ```python
-        from shield import WebAppShield, SecurityException
-        shield = WebAppShield("Your App Name", api_key="your-api-key")
-        shield.protect_streamlit()
+**Step 2 – Initialise the shield**  
+```python
+from shield import WebAppShield, SecurityException
+shield = WebAppShield("Your App Name", api_key="your-api-key")
+shield.protect_streamlit()
