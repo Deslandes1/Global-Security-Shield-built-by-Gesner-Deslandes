@@ -1,4 +1,4 @@
-# app.py – Global Security Shield Dashboard
+# app.py – Global Security Shield Dashboard (built by Gesner Deslandes)
 import streamlit as st
 import pandas as pd
 import datetime
