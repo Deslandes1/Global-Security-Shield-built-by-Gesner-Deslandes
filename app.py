@@ -10,7 +10,7 @@ from typing import Dict, Optional, Tuple
 # ---------- PAGE CONFIG ----------
 st.set_page_config(
     page_title="🛡️ Global Security Shield – built by Gesner Deslandes",
-    page_icon="🛡️",
+    page_icon="🌐",
     layout="wide"
 )
 
@@ -107,77 +107,133 @@ def process_incoming_log():
         except Exception:
             pass
 
+# ---------- CUSTOM CSS FOR COLORFUL LOGIN ----------
+st.markdown("""
+<style>
+    /* Login page gradient background */
+    .stApp {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    /* Center the login card */
+    .login-card {
+        background-color: rgba(255,255,255,0.95);
+        border-radius: 20px;
+        padding: 2rem;
+        box-shadow: 0 20px 35px rgba(0,0,0,0.2);
+        text-align: center;
+        max-width: 450px;
+        margin: 2rem auto;
+    }
+    .globe-icon {
+        font-size: 80px;
+        display: inline-block;
+        animation: spin 10s linear infinite;
+    }
+    @keyframes spin {
+        100% { transform: rotate(360deg); }
+    }
+    /* Pricing cards */
+    .price-card {
+        background: linear-gradient(135deg, #1e3c72, #2a5298);
+        border-radius: 15px;
+        padding: 1rem;
+        margin: 0.5rem 0;
+        color: white;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+    .price-card h4 {
+        margin: 0 0 0.3rem 0;
+        font-size: 1.2rem;
+    }
+    .price-card p {
+        margin: 0;
+        font-size: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
+
 # ---------- LOGIN PAGE ----------
 def login_page():
-    st.title("🛡️ Global Security Shield – built by Gesner Deslandes")
-    st.markdown("### Enterprise‑grade protection for your Streamlit apps and Python web applications")
-    st.markdown("---")
+    # Company logo and title
+    st.markdown("""
+    <div class="login-card">
+        <div class="globe-icon">🌐</div>
+        <h1 style="color:#1e3c72;">Global Security Shield</h1>
+        <p style="color:#555;">built by <strong>Gesner Deslandes</strong> – GlobalInternet.py</p>
+        <hr>
+        <h3>🔐 Login to Dashboard</h3>
+    </div>
+    """, unsafe_allow_html=True)
+    
     col1, col2, col3 = st.columns([1,2,1])
     with col2:
-        st.markdown("#### 🔐 Login to Dashboard")
         with st.form("login_form"):
-            pwd = st.text_input("Password", type="password")
-            if st.form_submit_button("Access Dashboard"):
+            pwd = st.text_input("Password", type="password", placeholder="Enter password")
+            if st.form_submit_button("🚪 Access Dashboard", use_container_width=True):
                 if pwd == "20082010":
                     st.session_state.authenticated = True
                     st.rerun()
                 else:
-                    st.error("Incorrect password.")
-    st.markdown("---")
-    st.markdown(
-        "### What is the Global Security Shield?\n\n"
-        "- ✅ Real‑time attack blocking – SQL injection, XSS, path traversal, command injection.\n"
-        "- ✅ Central dashboard – Register your apps, view attack logs, add custom rules.\n"
-        "- ✅ Easy integration – Add just two lines of code to protect any Streamlit or Python web app.\n"
-        "- ✅ Autonomous protection – Once deployed, the shield protects your apps without manual intervention.\n\n"
-        "**How it works:**  \n"
-        "The shield runs inside your application. It checks every user input (URL parameters, forms, file uploads) against a set of attack patterns. If a match is found, the request is rejected and a log is sent to this dashboard.\n\n"
-        "**Get started:**  \n"
-        "1. Deploy this dashboard (you're looking at it).  \n"
-        "2. Register your apps below to obtain API keys.  \n"
-        "3. Copy the `shield.py` module into your app's repository.  \n"
-        "4. Initialise the shield with your API key and wrap user inputs with `sanitize_input()`."
-    )
-    with st.expander("📘 Example integration code"):
-        st.code("""
-from shield import WebAppShield, SecurityException
-
-# Initialise the shield (use the API key from this dashboard)
-shield = WebAppShield("My App", api_key="your-api-key-here")
-shield.protect_streamlit()
-
-# For every user input:
-user_text = st.text_input("Enter something")
-try:
-    safe_text = shield.sanitize_input(user_text)
-    # use safe_text safely
-except SecurityException:
-    st.error("Attack detected – request blocked.")
-    st.stop()
-        """, language="python")
+                    st.error("Incorrect password. Hint: 20082010")
+    
+    # Pricing and contact info on login page (sidebar style)
+    with st.sidebar:
+        st.markdown("## 🌐 GlobalInternet.py")
+        st.markdown("**👨‍💻 Gesner Deslandes** – Founder & Python Builder")
+        st.markdown("📞 (509) 4738-5663")
+        st.markdown("✉️ deslandes78@gmail.com")
+        st.markdown("---")
+        st.markdown("### 💰 Pricing")
+        st.markdown("""
+        <div class="price-card">
+            <h4>📅 Monthly Subscription</h4>
+            <p>$49 USD / month</p>
+        </div>
+        <div class="price-card">
+            <h4>🏷️ Full Package (One‑Time)</h4>
+            <p>$2,999 USD</p>
+            <p><small>Includes source code, lifetime updates, 1 year support</small></p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("🌍 [Visit GlobalInternet.py](https://globalinternetsitepy-abh7v6tnmskxxnuplrdcgk.streamlit.app/)")
+        st.caption("Protect your apps with enterprise‑grade security")
 
 # ---------- MAIN DASHBOARD ----------
 def main_dashboard():
+    # Sidebar – company info and pricing
+    with st.sidebar:
+        st.markdown("## 🌐 GlobalInternet.py")
+        st.markdown("**👨‍💻 Gesner Deslandes** – Founder & Python Builder")
+        st.markdown("📞 (509) 4738-5663")
+        st.markdown("✉️ deslandes78@gmail.com")
+        st.markdown("---")
+        st.markdown("### 💰 Pricing")
+        st.markdown("""
+        <div class="price-card">
+            <h4>📅 Monthly Subscription</h4>
+            <p>$49 USD / month</p>
+        </div>
+        <div class="price-card">
+            <h4>🏷️ Full Package (One‑Time)</h4>
+            <p>$2,999 USD</p>
+            <p><small>Includes source code, lifetime updates, 1 year support</small></p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.markdown("---")
+        st.markdown("🔧 **Shield Status**")
+        st.success("🟢 Active – monitoring your apps")
+        st.markdown(f"**Registered apps:** {len(st.session_state.apps)}")
+        st.markdown(f"**Threats blocked:** {len(st.session_state.logs)}")
+        st.markdown("---")
+        if st.button("🚪 Logout", use_container_width=True):
+            st.session_state.authenticated = False
+            st.rerun()
+
     st.title("🛡️ Global Security Shield Dashboard – built by Gesner Deslandes")
     st.markdown("Protect all your Python web applications from SQL injection, XSS, and other attacks.")
-
-    st.sidebar.markdown("## 🔧 Shield Status")
-    st.sidebar.success("🟢 Active – monitoring your apps")
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(f"**Registered apps:** {len(st.session_state.apps)}")
-    st.sidebar.markdown(f"**Total threats blocked:** {len(st.session_state.logs)}")
-    st.sidebar.markdown("---")
-    st.sidebar.info(
-        "📘 **Quick start**\n\n"
-        "1. Register your app below → get an API key.\n"
-        "2. Add the `shield.py` module to your app.\n"
-        "3. Use the API key to initialise the shield.\n\n"
-        "All attacks will be logged here automatically."
-    )
-    if st.sidebar.button("🚪 Logout", use_container_width=True):
-        st.session_state.authenticated = False
-        st.rerun()
-
+    
     tab1, tab2, tab3, tab4 = st.tabs(["📋 Registered Apps", "⚠️ Threat Logs", "⚙️ Custom Rules", "🧪 Live Demo"])
 
     with tab1:
